@@ -1,0 +1,9 @@
+services:
+  postgis:
+    image: postgis/postgis:15-3.4
+    environment:
+      POSTGRES_USER: ideasmanager
+      POSTGRES_PASSWORD: ideasmanager
+      POSTGRES_DB: ideasmanager
+    ports:
+      - "5432:5432"
