@@ -1,0 +1,5 @@
+CREATE SEQUENCE user_seq;
+
+CREATE TABLE users (
+  id BIGINT PRIMARY KEY
+);

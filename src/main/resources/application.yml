@@ -1,1 +1,15 @@
-spring.application.name: ideasmanager
+logging:
+  level: 
+    root: INFO
+    com.shapirogrill: ${LOG_LEVEL:INFO}
+
+spring:
+  application.name: ideasmanager
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT:5432}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PWD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
