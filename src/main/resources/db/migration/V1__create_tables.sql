@@ -1,5 +1,7 @@
 CREATE SEQUENCE user_seq;
 
 CREATE TABLE users (
-  id BIGINT PRIMARY KEY
+  id BIGINT PRIMARY KEY,
+  username VARCHAR(255) NOT NULL,
+  password VARCHAR(255)
 );
