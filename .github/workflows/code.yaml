@@ -40,4 +40,4 @@ jobs:
         run: mvn -B package --file pom.xml -DskipTests
 
       - name: Run Tests
-        run: mvn test -Dspring.profiles.active=local
+        run: mvn test -Dspring.profiles.active=ci
