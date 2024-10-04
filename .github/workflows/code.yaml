@@ -36,5 +36,8 @@ jobs:
             sleep 2
           done
 
-      - name: Build with Maven and run test
-        run: mvn -B package --file pom.xml -Dspring.profiles.active=ci
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml -DskipTests
+
+      - name: Run Tests
+        run: mvn test -Dspring.profiles.active=local
