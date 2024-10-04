@@ -6,4 +6,4 @@ JWT_EXPIRATION_TIME: 1000
 POSTRGES_DB: ideasmanager
 POSTGRES_USER: ideasmanager
 POSTGRES_PWD: ideasmanager
-POSTGRES_HOST: ideasmanager
+POSTGRES_HOST: localhost
