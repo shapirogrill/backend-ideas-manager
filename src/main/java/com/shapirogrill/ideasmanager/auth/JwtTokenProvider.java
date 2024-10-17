@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.shapirogrill.ideasmanager.security.CustomUserDetailsService;
+import com.shapirogrill.ideasmanager.user.UserNotFoundException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -19,9 +20,11 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtTokenProvider {
     @Value("${app.jwtSecret}") // Load the secret key from application.properties
     private String jwtSecret;
@@ -40,7 +43,7 @@ public class JwtTokenProvider {
                 .setSubject(authentication.getName())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
-                .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret))) 
+                .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret)))
                 .compact();
     }
 
@@ -51,20 +54,20 @@ public class JwtTokenProvider {
                     .parseClaimsJws(authToken) // parse the token to validate the signature and check the expiration
                     .getBody();
         } catch (SignatureException ex) {
-            System.out.println("Invalid JWT signature");
+           log.warn("Invalid JWT signature");
         } catch (MalformedJwtException ex) {
-            System.out.println("Invalid JWT token");
+            log.warn("Invalid JWT token");
         } catch (ExpiredJwtException ex) {
-            System.out.println("Expired JWT token");
+            log.warn("Expired JWT token");
         } catch (UnsupportedJwtException ex) {
-            System.out.println("Unsupported JWT token");
+            log.warn("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
-            System.out.println("JWT claims string is empty.");
+            log.warn("JWT claims string is empty.");
         }
         return null; // return false if any exception occurs
     }
 
-    public Authentication getAuthentication(String username) {
+    public Authentication getAuthentication(String username) throws UserNotFoundException {
         // Load user details from the database
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
