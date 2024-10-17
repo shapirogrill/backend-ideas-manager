@@ -26,7 +26,7 @@ public class CusetomUserDetailsServiceTest {
     public void givenNotExistingUsername_whenLoadUserByUsername_thenUserNotFound() {
         // Given
         String username = "invalid_username";
-        Mockito.when(userRepository.findByUsername(username)).thenThrow(UserNotFoundException.class);
+        Mockito.when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
         // When & then
         Assertions.assertThrows(UserNotFoundException.class,

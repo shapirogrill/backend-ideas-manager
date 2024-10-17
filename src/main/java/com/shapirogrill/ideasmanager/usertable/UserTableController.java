@@ -70,7 +70,7 @@ public class UserTableController {
         }
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteById(@PathVariable Long id) {
         try {
             log.info("Delete UserTable" + id);

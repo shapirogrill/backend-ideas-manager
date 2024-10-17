@@ -3,9 +3,9 @@ package com.shapirogrill.ideasmanager.auth;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,13 +17,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shapirogrill.ideasmanager.security.SecurityConfig;
 import com.shapirogrill.ideasmanager.user.User;
 import com.shapirogrill.ideasmanager.user.UserNotFoundException;
 import com.shapirogrill.ideasmanager.user.UserRepository;
 
-@WebMvcTest(AuthController.class)
-@Import(SecurityConfig.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -43,7 +42,7 @@ public class AuthControllerTest {
     @MockBean
     private PasswordEncoder passwordEncoder;
 
-    private final String endpoint = "/api/auth";
+    private final String endpoint = "/v1/auth";
 
     private final String mockUsername = "Username";
 

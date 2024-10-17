@@ -17,7 +17,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserTableService {
     private final UserRepository userRepository;
+
     private final UserTableRepository userTableRepository;
+
     private final TableFieldRepository tableFieldRepository;
 
     private User getUser(String username) throws UserNotFoundException {
@@ -60,11 +62,11 @@ public class UserTableService {
         this.verifyFields(dto.getTableFields(), userTable);
         userTable.setTableFields(dto.getTableFields());
 
-        UserTable saveUserTable = this.userTableRepository.save(userTable);
+        this.userTableRepository.save(userTable);
         for (TableField field : dto.getTableFields()) {
             tableFieldRepository.save(field);
         }
 
-        return saveUserTable;
+        return userTable;
     }
 }
