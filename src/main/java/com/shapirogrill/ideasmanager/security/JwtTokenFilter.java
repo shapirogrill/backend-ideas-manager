@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.shapirogrill.ideasmanager.auth.JwtTokenProvider;
+import com.shapirogrill.ideasmanager.user.UserNotFoundException;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,25 +23,23 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
         String token = getJwtFromRequest(request);
 
-        if (token != null) {
-            Claims claims = jwtTokenProvider.validateToken(token);
-            if (claims != null) {  // if null, token is not valid
-                Authentication authentication = jwtTokenProvider.getAuthentication(claims.getSubject());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        }
-
         try {
+            if (token != null) {
+                Claims claims = jwtTokenProvider.validateToken(token);
+                if (claims != null) { // if null, token is not valid
+                    Authentication authentication = jwtTokenProvider.getAuthentication(claims.getSubject());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            }
             filterChain.doFilter(request, response);
-        }
-        catch(ServletException ex) {
+        } catch (UserNotFoundException ex) {
+            log.error("UserNotFoundException raised : " + ex);
+        } catch (ServletException ex) {
             log.error("ServletException raised : " + ex);
-        }
-        catch(java.io.IOException ex) {
+        } catch (java.io.IOException ex) {
             log.error("IO Exception raised : " + ex);
         }
     }

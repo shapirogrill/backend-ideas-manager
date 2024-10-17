@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.shapirogrill.ideasmanager.user.User;
+import com.shapirogrill.ideasmanager.user.UserNotFoundException;
 import com.shapirogrill.ideasmanager.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-            );
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -41,7 +41,7 @@ public class AuthController {
             String jwt = jwtTokenProvider.generateToken(authentication);
 
             return ResponseEntity.ok(new JwtResponse(jwt));
-        } catch (BadCredentialsException e) {
+        } catch (BadCredentialsException | UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
     }
@@ -51,8 +51,8 @@ public class AuthController {
         // Verify user does not exist
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
-                .badRequest()
-                .body("Error: Username is already taken!");
+                    .badRequest()
+                    .body("Error: Username is already taken!");
         }
 
         // Create a new one
