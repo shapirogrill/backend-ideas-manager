@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shapirogrill.ideasmanager.user.UserNotFoundException;
+import com.shapirogrill.ideasmanager.utableentity.UTableEntityService;
 import com.shapirogrill.ideasmanager.utils.TestClassFactory;
 
 @SpringBootTest
@@ -35,6 +36,9 @@ public class UserTableControllerTest {
         @MockBean
         private UserTableService userTableService;
 
+        @MockBean
+        private UTableEntityService uTableEntityService;
+
         private final String endpoint = "/v1/tables";
 
         private final Integer defaultNField = 2;
@@ -42,7 +46,6 @@ public class UserTableControllerTest {
         /********
          * GET
          *******/
-
         @Test
         @WithMockUser
         public void givenUserTables_whenGetArray_thenEmptyArray() throws Exception {
@@ -64,7 +67,6 @@ public class UserTableControllerTest {
         /********
          * POST
          *******/
-
         @Test
         @WithMockUser
         public void givenNonExistingUsername_whenCreateUserTable_thenNotFound() throws Exception {
@@ -130,7 +132,6 @@ public class UserTableControllerTest {
         /********
          * PUT
          *******/
-
         @Test
         @WithMockUser
         public void givenNotFoundableID_whenModifyNameById_thenNotFound() throws Exception {
@@ -138,56 +139,53 @@ public class UserTableControllerTest {
                 String userTableName = "table_name";
                 String newName = "username";
 
-                UserTable createdUserTable = TestClassFactory.createUserTableWithUser(defaultNField, userTableName);
-                UserTable newUserTable = TestClassFactory.createUserTable(0, newName);
-                newUserTable.setId(createdUserTable.getId());
-                newUserTable.setTableFields(createdUserTable.getTableFields());
-                newUserTable.setUser(createdUserTable.getUser());
+                UserTable userTable = TestClassFactory.createUserTableWithUser(defaultNField, userTableName);
+                DTOPatchUserTable dtoPatch = new DTOPatchUserTable();
+                dtoPatch.setName(newName);
 
-                Mockito.when(userTableRepository.findById(createdUserTable.getId())).thenReturn(Optional.empty());
+                Mockito.when(userTableRepository.findById(userTable.getId())).thenReturn(Optional.empty());
                 // When
-                mockMvc.perform(MockMvcRequestBuilders.put(endpoint + "/" + newUserTable.getId())
+                mockMvc.perform(MockMvcRequestBuilders.patch(endpoint + "/" + userTable.getId())
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(newUserTable)))
+                                .content(objectMapper.writeValueAsString(dtoPatch)))
                                 // Then
                                 .andExpect(MockMvcResultMatchers.status().isNotFound());
         }
 
         @Test
         @WithMockUser
-        public void givenValidName_whenModifyNameById_thenCreated() throws Exception {
+        public void givenValidName_whenModifyNameById_thenOk() throws Exception {
                 // Given
                 String userTableName = "table_name";
                 String newName = "username";
 
-                UserTable createdUserTable = TestClassFactory.createUserTableWithUser(defaultNField, userTableName);
-                UserTable newUserTable = TestClassFactory.createUserTable(0, newName);
-                newUserTable.setId(createdUserTable.getId());
-                newUserTable.setTableFields(createdUserTable.getTableFields());
-                newUserTable.setUser(createdUserTable.getUser());
+                UserTable userTable = TestClassFactory.createUserTableWithUser(defaultNField, userTableName);
+                DTOPatchUserTable dtoPatch = new DTOPatchUserTable();
+                dtoPatch.setName(newName);
 
-                Mockito.when(userTableRepository.findById(createdUserTable.getId()))
-                                .thenReturn(Optional.of(createdUserTable));
-                Mockito.when(userTableRepository.save(Mockito.eq(createdUserTable))).thenReturn(createdUserTable);
+                Mockito.when(userTableRepository.findById(userTable.getId()))
+                                .thenReturn(Optional.of(userTable));
+                Mockito.when(userTableRepository.save(Mockito.eq(userTable))).thenReturn(userTable);
+                System.out.println(objectMapper.writeValueAsString(dtoPatch));
                 // When
-                mockMvc.perform(MockMvcRequestBuilders.put(endpoint + "/" + newUserTable.getId())
+                mockMvc.perform(MockMvcRequestBuilders.patch(endpoint + "/" + userTable.getId())
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(newUserTable)))
-                                .andExpect(MockMvcResultMatchers.status().isCreated())
+                                .content(objectMapper.writeValueAsString(dtoPatch)))
+                                // Then
+                                .andExpect(MockMvcResultMatchers.status().isOk())
                                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(newName));
         }
 
         /********
          * DELETE
          *******/
-
         @Test
         @WithMockUser
         public void givenNonExistingId_whenDeleteById_thenNotFound() throws Exception {
                 // Given
                 Long nonExistingUserTableId = 0L;
 
-                Mockito.when(userTableRepository.existsById(nonExistingUserTableId)).thenReturn(false);
+                Mockito.when(userTableRepository.findById(nonExistingUserTableId)).thenReturn(Optional.empty());
                 // When
                 mockMvc.perform(MockMvcRequestBuilders.delete(endpoint + "/" + nonExistingUserTableId))
                                 .andExpect(MockMvcResultMatchers.status().isNotFound());
@@ -199,7 +197,7 @@ public class UserTableControllerTest {
                 // Given
                 UserTable userTable = TestClassFactory.createUserTable(defaultNField);
 
-                Mockito.when(userTableRepository.existsById(userTable.getId())).thenReturn(true);
+                Mockito.when(userTableRepository.findById(userTable.getId())).thenReturn(Optional.of(userTable));
                 // When
                 mockMvc.perform(MockMvcRequestBuilders.delete(endpoint + "/" + userTable.getId()))
                                 .andExpect(MockMvcResultMatchers.status().isNoContent());
