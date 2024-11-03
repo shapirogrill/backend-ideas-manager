@@ -17,6 +17,7 @@ import com.shapirogrill.ideasmanager.user.User;
 import com.shapirogrill.ideasmanager.user.UserNotFoundException;
 import com.shapirogrill.ideasmanager.user.UserRepository;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -29,7 +30,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -46,7 +47,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
+    public ResponseEntity<?> registerUser(@RequestBody @Valid SignupRequest signUpRequest) {
         // Verify user does not exist
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity

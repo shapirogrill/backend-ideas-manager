@@ -46,7 +46,7 @@ public class AuthControllerTest {
 
     private final String mockUsername = "Username";
 
-    private final String mockPassword = "PassWord";
+    private final String mockPassword = "PassWord1,";
 
     @Test
     public void givenExistingUsername_whenRegister_thenBadRequestException() throws Exception {
@@ -56,6 +56,146 @@ public class AuthControllerTest {
 
         Mockito.when(this.userRepository.existsByUsername(Mockito.eq(existingUsername)))
                 .thenReturn(true);
+
+        // When
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(signupRequest)))
+                // Then
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void givenTooShortUsername_whenRegister_thenBadRequest() throws Exception {
+        // Given
+        String tooShortUsername = "cut"; // < 5 chars
+        SignupRequest signupRequest = new SignupRequest(tooShortUsername, mockPassword);
+
+        // When
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(signupRequest)))
+                // Then
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void givenTooLongUsername_whenRegister_thenBadRequestException() throws Exception {
+        // Given
+        String tooLongUsername = "usernameWithMoreThan20Chars"; // > 20 chars
+        SignupRequest signupRequest = new SignupRequest(tooLongUsername, mockPassword);
+
+        // When
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(signupRequest)))
+                // Then
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void givenInvalidCharUsername_whenRegister_thenBadRequestException() throws Exception {
+        // Given
+        String usernameWithInvalidChars = "user,;af,dp"; // Contains invalid chars
+        SignupRequest signupRequest = new SignupRequest(usernameWithInvalidChars, mockPassword);
+
+        // When
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(signupRequest)))
+                // Then
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void givenTooShortPassword_whenRegister_thenBadRequest() throws Exception {
+        // Given
+        String tooShortPwd = "cU4t,"; // < 8 chars
+        SignupRequest signupRequest = new SignupRequest(mockUsername, tooShortPwd);
+
+        // When
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(signupRequest)))
+                // Then
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void givenTooLongPassword_whenRegister_thenBadRequestException() throws Exception {
+        // Given
+        String tooLongPwd = "pasword_ieithMoreThan20Chars"; // > 20 chars
+        SignupRequest signupRequest = new SignupRequest(mockUsername, tooLongPwd);
+
+        // When
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(signupRequest)))
+                // Then
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void givenPwdWithoutLowerChar_whenRegister_thenBadRequestException() throws Exception {
+        // Given
+        String invalidChar = "PWD-WITH0UT-LC"; // No Lower case
+        SignupRequest signupRequest = new SignupRequest(mockUsername, invalidChar);
+
+        // When
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(signupRequest)))
+                // Then
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void givenPwdWithoutUpperChar_whenRegister_thenBadRequestException() throws Exception {
+        // Given
+        String invalidChar = "pwd-with0ut-uc"; // No Upper case
+        SignupRequest signupRequest = new SignupRequest(mockUsername, invalidChar);
+
+        // When
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(signupRequest)))
+                // Then
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void givenPwdWithoutNumerical_whenRegister_thenBadRequestException() throws Exception {
+        // Given
+        String invalidChar = "PWD-WITHOUT-NUM"; // Without numerical
+        SignupRequest signupRequest = new SignupRequest(mockUsername, invalidChar);
+
+        // When
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(signupRequest)))
+                // Then
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void givenPwdWithoutSpecialChar_whenRegister_thenBadRequestException() throws Exception {
+        // Given
+        String invalidChar = "PWDwITH0UTspecChar"; // Without special char
+        SignupRequest signupRequest = new SignupRequest(mockUsername, invalidChar);
+
+        // When
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(signupRequest)))
+                // Then
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void givenPwdWithInvalidChar_whenRegister_thenBadRequestException() throws Exception {
+        // Given
+        String invalidChar = "PWDwITH0UT  specChar"; // With spaces (invalid char)
+        SignupRequest signupRequest = new SignupRequest(mockUsername, invalidChar);
 
         // When
         mockMvc.perform(MockMvcRequestBuilders.post(endpoint + "/register")
@@ -91,7 +231,8 @@ public class AuthControllerTest {
 
         // Mock
         Mockito.when(
-                this.authenticationManager.authenticate(Mockito.any(UsernamePasswordAuthenticationToken.class)))
+                this.authenticationManager
+                        .authenticate(Mockito.any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(UserNotFoundException.class);
 
         // When
@@ -110,7 +251,8 @@ public class AuthControllerTest {
 
         // Mock
         Mockito.when(
-                this.authenticationManager.authenticate(Mockito.any(UsernamePasswordAuthenticationToken.class)))
+                this.authenticationManager
+                        .authenticate(Mockito.any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(BadCredentialsException.class);
 
         // When
@@ -129,7 +271,8 @@ public class AuthControllerTest {
 
         // Mock
         Mockito.when(
-                this.authenticationManager.authenticate(Mockito.any(UsernamePasswordAuthenticationToken.class)))
+                this.authenticationManager
+                        .authenticate(Mockito.any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(new UsernamePasswordAuthenticationToken(null, null));
 
         Mockito.when(this.jwtTokenProvider.generateToken(Mockito.any(Authentication.class)))
