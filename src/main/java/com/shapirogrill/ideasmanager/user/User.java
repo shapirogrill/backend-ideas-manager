@@ -3,6 +3,7 @@ package com.shapirogrill.ideasmanager.user;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.shapirogrill.ideasmanager.auth.util.annotations.ValidUsername;
 import com.shapirogrill.ideasmanager.usertable.UserTable;
 
 import jakarta.persistence.CascadeType;
@@ -15,7 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,8 +30,8 @@ public class User {
     private Long id;
 
     // User information
-    @NotBlank
-    @Column(nullable = false)
+    @ValidUsername
+    @Column(nullable = false, unique = true)
     private String username;
 
     @JsonIgnore

@@ -29,11 +29,11 @@ public class TestClassFactory {
     }
 
     public static User createUser() {
-        return createUser("username" + serialUserId, "password" + serialUserId);
+        return createUser("username" + serialUserId, "passwO;rd" + serialUserId);
     }
 
     public static User createUser(String username) {
-        return createUser(username, "password" + serialUserId);
+        return createUser(username, "passwO;rd" + serialUserId);
     }
 
     /***********
