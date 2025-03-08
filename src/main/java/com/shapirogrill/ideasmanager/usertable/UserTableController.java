@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.shapirogrill.ideasmanager.uentity.UTableEntityService;
 import com.shapirogrill.ideasmanager.user.UserNotFoundException;
-import com.shapirogrill.ideasmanager.utableentity.UTableEntityService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

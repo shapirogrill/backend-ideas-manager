@@ -1,4 +1,4 @@
-package com.shapirogrill.ideasmanager.utableentity;
+package com.shapirogrill.ideasmanager.uentity;
 
 import com.shapirogrill.ideasmanager.common.enums.DataType;
 import com.shapirogrill.ideasmanager.usertable.UserTable;
@@ -15,7 +15,7 @@ import static org.mockito.Mockito.times;
 public class UTableEntityServiceTest {
 
     @Mock
-    private URepository uRepository;
+    private EntityRepository uRepository;
 
     @InjectMocks
     private UTableEntityService uTableEntityService;

@@ -17,8 +17,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shapirogrill.ideasmanager.uentity.UTableEntityService;
 import com.shapirogrill.ideasmanager.user.UserNotFoundException;
-import com.shapirogrill.ideasmanager.utableentity.UTableEntityService;
 import com.shapirogrill.ideasmanager.utils.TestClassFactory;
 
 @SpringBootTest
