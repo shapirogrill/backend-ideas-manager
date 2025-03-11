@@ -75,4 +75,28 @@ public class SQLCommandBuilderTest {
         assertThat(query)
                 .isEqualTo("INSERT INTO " + tableName + " VALUES ( " + idField + ", " + nameField + ");");
     }
+
+    @Test
+    public void testBuildUpdate() {
+        String assignment = "year = 2002";
+        String whereClause = "ID = 1";
+        String query = builder.update(tableName)
+                .set(assignment)
+                .where(whereClause)
+                .buildUpdate();
+
+        assertThat(query)
+                .isEqualTo("UPDATE " + tableName + " SET " + assignment + "  WHERE " + whereClause + ";");
+    }
+
+    @Test
+    public void testBuildDelete() {
+        String whereClause = "ID = 1";
+        String query = builder.from(tableName)
+                .where(whereClause)
+                .buildDelete();
+
+        assertThat(query)
+                .isEqualTo("DELETE  FROM " + tableName + "  WHERE " + whereClause + ";");
+    }
 }
