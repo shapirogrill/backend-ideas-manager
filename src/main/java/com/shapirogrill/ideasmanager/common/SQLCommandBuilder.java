@@ -1,7 +1,9 @@
 package com.shapirogrill.ideasmanager.common;
 
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @NoArgsConstructor
 public class SQLCommandBuilder {
     private final StringBuilder selectClause = new StringBuilder();
@@ -9,7 +11,11 @@ public class SQLCommandBuilder {
     private final StringBuilder dropClause = new StringBuilder();
     private final StringBuilder alterClause = new StringBuilder();
     private final StringBuilder renameClause = new StringBuilder();
+    private final StringBuilder insertClause = new StringBuilder();
+    private final StringBuilder updateClause = new StringBuilder();
     private final StringBuilder fieldsClause = new StringBuilder();
+    private final StringBuilder valuesClause = new StringBuilder();
+    private final StringBuilder setClause = new StringBuilder();
     private final StringBuilder fromClause = new StringBuilder();
     private final StringBuilder whereClause = new StringBuilder();
 
@@ -48,6 +54,16 @@ public class SQLCommandBuilder {
         return this;
     }
 
+    public SQLCommandBuilder insert(String table) {
+        this.insertClause.append("INSERT INTO ").append(table);
+        return this;
+    }
+
+    public SQLCommandBuilder update(String table) {
+        this.updateClause.append("UPDATE ").append(table);
+        return this;
+    }
+
     public SQLCommandBuilder fields(SQLField... fields) {
         for (int i = 0; i < fields.length; i++) {
             this.fieldsClause.append(fields[i].name)
@@ -55,6 +71,29 @@ public class SQLCommandBuilder {
                     .append(fields[i].type);
             if (i < fields.length - 1) {
                 this.fieldsClause.append(", ");
+            }
+        }
+        return this;
+    }
+
+    public SQLCommandBuilder values(String... values) {
+        this.valuesClause.append("VALUES ( ");
+        for (int i = 0; i < values.length; i++) {
+            this.valuesClause.append(values[i]);
+            if (i < values.length - 1) {
+                this.valuesClause.append(", ");
+            }
+        }
+        this.valuesClause.append(")");
+        return this;
+    }
+
+    public SQLCommandBuilder set(String... assigments) {
+        this.setClause.append("SET ");
+        for (int i = 0; i < assigments.length; i++) {
+            this.setClause.append(assigments[i]);
+            if (i < assigments.length - 1) {
+                this.setClause.append(", ");
             }
         }
         return this;
@@ -92,6 +131,21 @@ public class SQLCommandBuilder {
 
     // Build RENAME query
     public String buildRename() {
-        return alterClause.toString() + renameClause + ";";
+        return alterClause.toString() + renameClause.toString() + ";";
+    }
+
+    // Build Insert query
+    public String buildInsert() {
+        return insertClause.toString() + " " + valuesClause.toString() + ";";
+    }
+
+    // Build Update query
+    public String buildUpdate() {
+        return updateClause.toString() + " " + setClause.toString() + " " + whereClause.toString() + ";";
+    }
+
+    // Build Delete query
+    public String buildDelete() {
+        return "DELETE " + fromClause.toString() + " " + whereClause.toString() + ";";
     }
 }
